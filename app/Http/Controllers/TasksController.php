@@ -3,9 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Task;
+use App\Models\Relation;
+use App\Models\User;
+use App\Models\Status;
+use App\Http\Resources\TasksResource;
+use App\Http\Requests\TasksRequest;
 
 class TasksController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+     
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +24,7 @@ class TasksController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -34,7 +45,28 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $admin = auth()->user();
+        $admin_id = $admin->id;
+        $sub_number = $request->input('sub_user');
+        $sub_id = $admin->sub_user()
+                        ->where('phone_number','=',$sub_number)
+                        ->firstOrFail()
+                        ->id;
+        // $sub_id = User::where('phone_number','=', $sub_number)->firstOrFail()->id;
+        $relation_id = Relation::where('admin_id', '=', $admin_id)
+                            ->where('sub_id','=', $sub_id)
+                            ->firstOrFail()
+                            ->id;
+        $task = Task::create([
+            // 'uuid'=> Str::uuid(),
+            'relation_id' => $relation_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'status_id' => 1,
+            'deadline' => $request->deadline,
+        ]);
+
+        return new TasksResource($task);
     }
 
     /**
@@ -43,9 +75,9 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(TasksRequest $task)
     {
-        //
+        return new TasksResource($task);
     }
 
     /**
@@ -66,19 +98,38 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function admin_update(TasksRequest $request, $id)
     {
-        //
+        $task = Task::where('id', $id)->update([  
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'deadline' => $request->input('deadline')
+        ]);
+
+        return new TasksResource($task);
     }
 
+    public function sub_update(TasksRequest $request, $id)
+    {
+        $status_name = $request->input('status_name');
+        $status_id = Status::where('name','=', $status_name)
+                            ->firstOrFail()
+                            ->id;
+        $task = Task::where('id', $id)->update([  
+            'status_id' => $status_id,
+        ]);
+
+        return new TasksResource($task);
+    }
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return response(null, 204);
     }
 }

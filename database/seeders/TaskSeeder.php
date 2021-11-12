@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TaskSeeder extends Seeder
 {
@@ -15,59 +16,76 @@ class TaskSeeder extends Seeder
     public function run()
     {
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '1',
             'title' => 'learn laravel',
             'description' => 'eloquents',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '1',
             'title' => 'learn laravel 8',
             'description' => 'error code',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '2',
             'title' => 'learn OWL',
             'description' => 'OWL',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
        
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '2',
             'title' => 'learn JS',
             'description' => 'JS',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '3',
             'title' => 'todo list frontend',
             'description' => 'tailwindcss',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '3',
             'title' => 'web design',
             'description' => 'design',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '4',
             'title' => 'backend api',
             'description' => 'Json',
-            'status' => 'affected',
+            'status_id' => '1',
         ]);
 
         DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
             'relation_id' => '4',
             'title' => 'Laravel api',
             'description' => 'api',
-            'status' => 'affected',
+            'status_id' => '1',
+        ]);
+
+        DB::table('tasks')->insert([
+            'id'=> Str::uuid(),
+            'relation_id' => '4',
+            'title' => 'date test',
+            'description' => 'test description',
+            'status_id' => '1',
+            'deadline' => '2021-12-02'
         ]);
     }
 }

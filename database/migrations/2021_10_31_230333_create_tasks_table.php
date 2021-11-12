@@ -14,16 +14,21 @@ class CreateTasksTable extends Migration
     public function up()
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->increments('id');
+            $table->uuid('id')->unique();
             $table->unsignedInteger('relation_id');
             $table->string('title');
             $table->longText('description');
-            $table->enum('status',['done','affected','in progress','draft']);
+            $table->unsignedInteger('status_id');
+            $table->date('deadline')->nullable();
             $table->foreign('relation_id')
                 ->references('id')
-                ->on('relations')
-                ->onDelete('cascade'); //set null if we want to keep the tasks data related to the deleted user
+                ->on('relations');
+                //->onDelete('cascade'); //set null if we want to keep the tasks data related to the deleted user
+            $table->foreign('status_id')
+                ->references('id')
+                ->on('statuses');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

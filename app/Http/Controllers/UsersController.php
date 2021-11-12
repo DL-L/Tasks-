@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Relation;
+use App\Http\Resources\UsersResource;
+use App\Http\Resources\TasksResource;
 
 class UsersController extends Controller
 {
@@ -21,23 +23,15 @@ class UsersController extends Controller
     public function indexAdmins()
     {
         $connected_user= auth()->user();
-        $admin_users= $connected_user->admin_user->toJson(JSON_PRETTY_PRINT);
-        if(!json_decode($admin_users)){
-            abort(404, 'No admin found');
-        }
-        else return $admin_users;
-        // dd($admin_users);
+        $admin_users= $connected_user->admin_user;
+        return UsersResource::collection($admin_users);
     }
 
     public function indexSubs()
     {
         $connected_user= auth()->user();
-        $sub_users= $connected_user->sub_user->toJson(JSON_PRETTY_PRINT);
-        if(!json_decode($sub_users)){
-            abort(404, 'No sub found');
-        }
-        else return $sub_users;
-        // dd($sub_users);
+        $sub_users= $connected_user->sub_user;
+        return UsersResource::collection($sub_users);
     }
 
     /**
@@ -73,12 +67,8 @@ class UsersController extends Controller
         $relation_admin= Relation::where(['admin_id'=> $id,
                                     'sub_id' => $connected_user_id ])
                             ->firstOrFail();
-        $tasks_admin= $relation_admin->usertasks->toJson(JSON_PRETTY_PRINT);
-        if(!json_decode($tasks_admin)){
-            abort(404, 'No tasks found');
-        }
-        else return $tasks_admin;
-        // dd($tasks_admin);   
+        $tasks_admin= $relation_admin->usertasks;
+        return TasksResource::collection($tasks_admin);
     }
 
     public function showSubTasks($id)
@@ -86,12 +76,14 @@ class UsersController extends Controller
         $connected_user_id= auth()->user()->id;
         $relation_sub= Relation::where(['admin_id'=> $connected_user_id,
                                     'sub_id' => $id ])
-                            ->firstOrFail();
-        $tasks_sub= $relation_sub->usertasks->toJson(JSON_PRETTY_PRINT);
-        if(!json_decode($tasks_sub)){
-            abort(404, 'No tasks found');
-        }
-        else return $tasks_sub;        // dd($tasks_sub);   
+                                ->firstOrFail();
+        $tasks_sub= $relation_sub->usertasks;
+        return TasksResource::collection($tasks_sub);
+    }
+
+    public function create_task($request,$id)
+    {
+       
     }
 
     /**

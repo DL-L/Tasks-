@@ -10,10 +10,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Session;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'users';
 
@@ -67,6 +68,11 @@ class User extends Authenticatable
             'admin_id'
         );
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
     
     public function sendVerificationCode($phone_n)
     {
@@ -93,5 +99,4 @@ class User extends Authenticatable
             return false;
         }
     }
-
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRelationsTable extends Migration
+class CreateCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,21 @@ class CreateRelationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('relations', function (Blueprint $table) {
-            $table->id('id');
-            $table->unsignedInteger('admin_id');
-            $table->unsignedInteger('sub_id');
-            $table->foreign('admin_id')
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('task_id')->unsigned();
+            $table->unsignedInteger('user_id');
+            $table->boolean('seen');
+            $table->longText('body');
+            $table->foreign('task_id')
                 ->references('id')
-                ->on('users');
-            $table->foreign('sub_id')
+                ->on('tasks');
+            $table->foreign('user_id')
                 ->references('id')
                 ->on('users');
             $table->softDeletes();
+            $table->timestamps();
+            
         });
     }
 
@@ -34,6 +38,6 @@ class CreateRelationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('relations');
+        Schema::dropIfExists('comments');
     }
 }
