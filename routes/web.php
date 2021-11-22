@@ -21,26 +21,44 @@ use Illuminate\Support\Facades\Auth;
 //     return view('welcome');
 // });
 
-Route::post('user/validate/', [LoginController::class, 'validate_num']);
-Route::post('user/auth/', [LoginController::class,'auth']);
+// Route::post('user/validate/', [LoginController::class, 'validate_num']);
+// Route::post('user/auth/', [LoginController::class,'auth']);
 Route::get('/', function(Request $request)
     {
       return 'Unauthenticated';
     })->name('login');
 
-Route::get('/users/admins', 'App\Http\Controllers\UsersController@indexAdmins');
+// Route::get('/users/admins', 'App\Http\Controllers\UsersController@indexAdmins');
 
-Route::get('tasks', 'App\Http\Controllers\TasksController@index');
 
-Route::get('/users/subs', 'App\Http\Controllers\UsersController@indexSubs');
 
-Route::get('/users/admins/{id}', 'App\Http\Controllers\UsersController@showAdminTasks');
+// Route::middleware(['RoleAdmin'])->group(function(){
+  
+//   Route::resource('/tasks', TasksController::class, ['only' => ['destroy']]);
+// });
+//Route::resource('/tasks', TasksController::class);
+//Route::put('/tasks/{id}', 'App\Http\Controllers\TasksController@admin_update')->middleware('RoleAdmin');
 
-Route::get('/users/subs/{id}', 'App\Http\Controllers\UsersController@showSubTasks');
+Route::get('tasks/{task}', 'App\Http\Controllers\TasksController@show');
 
-Route::resource('/tasks', TasksController::class);
+Route::post('/tasks', 'App\Http\Controllers\TasksController@store' );
 
-Route::get('users/admins/tasks/{id}', 'App\Http\Controllers\TasksController@show');
+Route::put('/admin/tasks/{task}', 'App\Http\Controllers\TasksController@admin_update' )
+        ->whereUuid('task')
+        ->middleware('role.admin');
+
+Route::put('/sub/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )
+        ->whereUuid('task')
+        ->middleware('role.sub');
+
+Route::delete('/tasks/{task}', 'App\Http\Controllers\TasksController@destroy')->middleware('role.admin');
+
+
+Route::post('/tasks/comments/{task}', 'App\Http\Controllers\TasksController@store_comment')->middleware('role.sub');
+
+Route::put('/comments/{comment}', 'App\Http\Controllers\CommentsController@update' );
+
+// Route::put('/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )->whereUuid('task');
 
 Route::get('user/logout', function()
 {
