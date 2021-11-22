@@ -12,8 +12,10 @@ class LoginController extends Controller
 {
     function validate_num(Request $request)
     {
+        $request->validate([
+            'phone_num' => 'required'
+        ]);
         $phoneNumber = $request->phone_num;
-
         $user = User::where('phone_number', '=', $phoneNumber)->first();
         if(!$user)
             {
@@ -21,24 +23,37 @@ class LoginController extends Controller
                 'phone_number'=> $phoneNumber
               ]);
             } 
-        Session::put('phoneNum', $phoneNumber);
+        $request->session()->put('phoneNum', $phoneNumber);
         $user = User::where('phone_number', '=', $phoneNumber)->first();
-        $user->sendVerificationCode($phoneNumber);
-        return \Response::json(array('success' => true));
+        $code = $user->sendVerificationCode($phoneNumber);
+        return response()->json([
+            'success' => true,
+            'user' => $user,
+            'code_session' => $code[1],
+        ]);
   }
 
     function auth(Request $request)
     {
+        $request->validate([
+            'code' => 'required|max:6|min:6'
+        ]);
         $code = $request->code;
-        $phoneNum = Session::get('phoneNum');
+        $phoneNum = $request->session()->get('phoneNum');
+        // $phone_number = $request->phone_number;
+        // $code_sent = $request->code_sent;
         $user = User::where('phone_number', '=', $phoneNum)->firstOrFail();
         if($user && $user->validateCode($code)) 
         {
-            return \Response::json(array('success' => true));
+            $authToken = $user->createToken('auth-token')->plainTextToken;
+            return response()->json(['success' => true,
+                                    'user' => $phoneNum,
+                                    'access_token' => $authToken]);
         } 
         else 
         {
-            return \Response::json(array('success' => false));
+            return response()->json(['success' => false,
+                                    'user' => $phoneNum]);
         }
     }
 }

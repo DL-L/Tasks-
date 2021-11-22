@@ -10,10 +10,10 @@ use App\Http\Resources\TasksResource;
 
 class UsersController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
     
     /**
      * Display a listing of the resource.
@@ -24,7 +24,8 @@ class UsersController extends Controller
     {
         $connected_user= auth()->user();
         $admin_users= $connected_user->admin_user;
-        return UsersResource::collection($admin_users);
+        // return UsersResource::collection($admin_users);
+        return response()->json($admin_users, 200);
     }
 
     public function indexSubs()
@@ -78,6 +79,16 @@ class UsersController extends Controller
                                     'sub_id' => $id ])
                                 ->firstOrFail();
         $tasks_sub= $relation_sub->usertasks;
+        $user_comments = User::where('id', '=', $id)->firstOrFail()->comments;
+        // dd($user_comments);
+        if ($user_comments) {
+            foreach ($user_comments as $user_comment) {
+                $user_comment->update([
+                    'seen' => true
+                    //notification
+                ]);
+            }
+        }
         return TasksResource::collection($tasks_sub);
     }
 

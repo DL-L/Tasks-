@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Relation;
-use App\Models\User;
+use App\Models\Comment;
 use App\Models\Status;
 use App\Http\Resources\TasksResource;
 use App\Http\Requests\TasksRequest;
@@ -24,7 +24,7 @@ class TasksController extends Controller
      */
     public function index()
     {
-        
+        return 'Test';
     }
 
     /**
@@ -69,13 +69,23 @@ class TasksController extends Controller
         return new TasksResource($task);
     }
 
+    public function store_comment(Request $request, Task $task)
+    {
+        Comment::create([
+            'task_id' => $task->id,
+            'user_id' => auth()->user()->id,
+            'seen' => false,
+            'body' => $request->input('body'),
+        ]);
+    }
+
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(TasksRequest $task)
+    public function show(Task $task)
     {
         return new TasksResource($task);
     }
@@ -98,9 +108,9 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function admin_update(TasksRequest $request, $id)
+    public function admin_update(Request $request, Task $task)
     {
-        $task = Task::where('id', $id)->update([  
+        $task-> update([  
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'deadline' => $request->input('deadline')
@@ -109,13 +119,13 @@ class TasksController extends Controller
         return new TasksResource($task);
     }
 
-    public function sub_update(TasksRequest $request, $id)
+    public function sub_update(Request $request, Task $task)
     {
         $status_name = $request->input('status_name');
         $status_id = Status::where('name','=', $status_name)
                             ->firstOrFail()
                             ->id;
-        $task = Task::where('id', $id)->update([  
+        $task->update([  
             'status_id' => $status_id,
         ]);
 

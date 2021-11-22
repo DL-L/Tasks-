@@ -42,4 +42,14 @@ class Task extends Model
     {
         return $this->belongsTo(Status::class);
     }
+
+    public function admin($user_id)
+    {
+
+        if ($this->relation()->first()->admin_id == $user_id) {
+            return true;
+        }
+
+        else return false;
+    }
 }

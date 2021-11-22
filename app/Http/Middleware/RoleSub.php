@@ -4,10 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Task;
 
-class RoleAdmin
+class RoleSub
 {
     /**
      * Handle an incoming request.
@@ -17,10 +16,10 @@ class RoleAdmin
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
-    {            
-            $connected_user_id= auth()->user()->id;
+    {
+        $connected_user_id= auth()->user()->id;
             $task = Task::where('id', '=', $request->segment(3))->first();
-            if ($task->admin($connected_user_id) == true) {
+            if ($task->admin($connected_user_id) == false) {
                 return $next($request);
             }
 

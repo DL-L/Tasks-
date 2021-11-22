@@ -12,8 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/user/validate',
-        '/user/auth',
-        '/tasks'
+        'api/user/validate',
+        'api/user/auth',
+        'sub/tasks/*',
+        '/tasks/comments/*',
+        '/comments/*'
     ];
 }

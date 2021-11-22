@@ -16,6 +16,8 @@ class Comment extends Model
 
     protected $hidden = ['task_id', 'deleted_at'];
 
+    protected $fillable = ['task_id', 'user_id', 'seen', 'body'];
+
     public function task()
     {
         return $this->belongsTo(Task::class);

@@ -85,7 +85,7 @@ class User extends Authenticatable
             'from'=> $_ENV['TWILIO_NUMBER'], 
             'body'=>"Your auth code is " . $verif_code
         ]);
-        return true;
+        return [true, $verif_code];
     }
 
     public function validateCode($code)
