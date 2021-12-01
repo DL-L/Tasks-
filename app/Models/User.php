@@ -79,12 +79,12 @@ class User extends Authenticatable
         $verif_code = mt_rand(100000, 999999);
         Session::put('verif_code', $verif_code);
 
-        $client = new Client($_ENV['TWILIO_SID'], $_ENV['TWILIO_AUTH_TOKEN']);
-        $to= '+212' . $phone_n;
-        $sms = $client->messages->create($to,[
-            'from'=> $_ENV['TWILIO_NUMBER'], 
-            'body'=>"Your auth code is " . $verif_code
-        ]);
+        // $client = new Client($_ENV['TWILIO_SID'], $_ENV['TWILIO_AUTH_TOKEN']);
+        // $to= '+212' . $phone_n;
+        // $sms = $client->messages->create($to,[
+        //     'from'=> $_ENV['TWILIO_NUMBER'], 
+        //     'body'=>"Your auth code is " . $verif_code
+        // ]);
         return [true, $verif_code];
     }
 

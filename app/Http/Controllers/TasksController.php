@@ -12,19 +12,42 @@ use App\Http\Requests\TasksRequest;
 
 class TasksController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
      
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function indexAdmin()
     {
-        return 'Test';
+        $connected_user_id= auth()->user()->id;
+        $relation_id = Relation::where('sub_id', '=', $connected_user_id)
+                            ->get();
+        $array = array();
+        foreach ($relation_id as $rel_id) {
+            $relation_id = $rel_id->id;
+            $array[] = $rel_id->id;
+        }
+        $tasks = Task::whereIn('relation_id', $array)->get();
+        return response()->json($tasks, 200);
+    }
+
+    public function indexSub()
+    {
+        $connected_user_id= auth()->user()->id;
+        $relation_id = Relation::where('admin_id', '=', $connected_user_id)
+                            ->get();
+        $array = array();
+        foreach ($relation_id as $rel_id) {
+            $relation_id = $rel_id->id;
+            $array[] = $rel_id->id;
+        }
+        $tasks = Task::whereIn('relation_id', $array)->get();
+        return response()->json($tasks, 200);
     }
 
     /**
@@ -47,7 +70,8 @@ class TasksController extends Controller
     {
         $admin = auth()->user();
         $admin_id = $admin->id;
-        $sub_number = $request->input('sub_user');
+        $sub_number = $request->sub_user;
+        //TODO:change the number to username
         $sub_id = $admin->sub_user()
                         ->where('phone_number','=',$sub_number)
                         ->firstOrFail()

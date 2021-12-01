@@ -32,7 +32,8 @@ class UsersController extends Controller
     {
         $connected_user= auth()->user();
         $sub_users= $connected_user->sub_user;
-        return UsersResource::collection($sub_users);
+        return response()->json($sub_users, 200);
+        // return UsersResource::collection($sub_users);
     }
 
     /**
@@ -69,7 +70,8 @@ class UsersController extends Controller
                                     'sub_id' => $connected_user_id ])
                             ->firstOrFail();
         $tasks_admin= $relation_admin->usertasks;
-        return TasksResource::collection($tasks_admin);
+        return response()->json($tasks_admin, 200);
+        // return TasksResource::collection($tasks_admin);
     }
 
     public function showSubTasks($id)

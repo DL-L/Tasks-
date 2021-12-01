@@ -41,7 +41,7 @@ Route::get('/', function(Request $request)
 
 Route::get('tasks/{task}', 'App\Http\Controllers\TasksController@show');
 
-Route::post('/tasks', 'App\Http\Controllers\TasksController@store' );
+// Route::post('/tasks', 'App\Http\Controllers\TasksController@store' );
 
 Route::put('/admin/tasks/{task}', 'App\Http\Controllers\TasksController@admin_update' )
         ->whereUuid('task')

@@ -23,13 +23,14 @@ use App\Http\Controllers\TasksController;
 Route::post('user/validate/', [LoginController::class, 'validate_num'])->middleware('web');
 Route::post('user/auth/', [LoginController::class,'auth'])->middleware('web');
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'web']], function () {
     //users
     Route::get('/users/admins', 'App\Http\Controllers\UsersController@indexAdmins');
     Route::get('/users/subs', 'App\Http\Controllers\UsersController@indexSubs');
     //tasks
-    Route::get('/users/admins/{id}', 'App\Http\Controllers\UsersController@showAdminTasks');
-    Route::get('/users/subs/{id}', 'App\Http\Controllers\UsersController@showSubTasks');
+    Route::get('/users/admins/tasks', 'App\Http\Controllers\TasksController@indexAdmin');
+    Route::get('/users/subs/tasks', 'App\Http\Controllers\TasksController@indexSub');
+    Route::post('/tasks', 'App\Http\Controllers\TasksController@store' );
 });
 
 

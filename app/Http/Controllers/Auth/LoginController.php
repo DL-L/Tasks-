@@ -13,7 +13,7 @@ class LoginController extends Controller
     function validate_num(Request $request)
     {
         $request->validate([
-            'phone_num' => 'required'
+            'phone_num' => 'required|max:9|min:9'
         ]);
         $phoneNumber = $request->phone_num;
         $user = User::where('phone_number', '=', $phoneNumber)->first();
