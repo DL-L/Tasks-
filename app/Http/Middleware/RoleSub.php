@@ -18,7 +18,7 @@ class RoleSub
     public function handle(Request $request, Closure $next)
     {
         $connected_user_id= auth()->user()->id;
-            $task = Task::where('id', '=', $request->segment(3))->first();
+            $task = Task::where('id', '=', $request->segment(4))->first();
             if ($task->admin($connected_user_id) == false) {
                 return $next($request);
             }

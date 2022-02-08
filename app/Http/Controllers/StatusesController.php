@@ -3,36 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\CommentsResource;
-use App\Models\Comment;
+use App\Models\Status;
 
-class CommentsController extends Controller
+class StatusesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function sub_index()
+    public function index()
     {
-        $connected_user_id = auth()->user()->id;
-        $comments = Comment::where('user_id', '=', $connected_user_id)->firstOrFail();
-        return CommentsResource::collection($comments);
+        $statuses = Status::all();
+        return $statuses;
     }
 
-    public function admin_index()
-    {
-        $sub_users = auth()->user()->sub_user;
-        foreach ($sub_users as $sub_user) {
-            $sub_user_id = $sub_user->id;
-            $comments = Comment::where('user_id', '=', $sub_user_id)->firstOrFail();
-            return CommentsResource::collection($comments);
-        }
-    }
     /**
      * Show the form for creating a new resource.
      *
@@ -51,7 +36,7 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-    
+        //
     }
 
     /**
@@ -83,18 +68,10 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request, $id)
     {
-        $comment->update([
-            'body' => $request->input('body'),
-        ]);
+        //
     }
-    // public function update_status(Request $request, Comment $comment)
-    // {
-    //     $comment->update([
-    //         'seen' => $request->input('seen'),
-    //     ]);
-    // }
 
     /**
      * Remove the specified resource from storage.
@@ -102,8 +79,8 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        $comment->delete();
+        //
     }
 }

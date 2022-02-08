@@ -69,6 +69,30 @@ class User extends Authenticatable
         );
     }
 
+    // public function to()
+    // {
+    //     return $this->belongsToMany(
+    //         User::class,
+    //         'invitations',
+    //         'from',
+    //         'to'
+    //     );
+    // }
+
+    // public function from()
+    // {
+    //     return $this->belongsToMany(
+    //         User::class,
+    //         'invitations',
+    //         'to',
+    //         'from'
+    //     );
+    // }
+    public function to()
+    {
+        return $this->hasMany(Invitation::class, 'to');
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);

@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Task;
 use Illuminate\Support\Str;
 
-class RoleAdmin
+class RoleAdminEdit
 {
     /**
      * Handle an incoming request.
@@ -20,8 +20,8 @@ class RoleAdmin
     public function handle(Request $request, Closure $next)
     {            
             $connected_user_id= auth()->user()->id;
-            // dd($request->segment(4));
-            $task = Task::where('id', '=', $request->segment(4))->first();
+            // dd($request->segment(3));
+            $task = Task::where('id', '=', $request->segment(3))->first();
             // dd($task);
             if ($task->admin($connected_user_id) == true) {
                 return $next($request);

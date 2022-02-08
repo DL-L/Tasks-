@@ -14,7 +14,7 @@ class CreateTasksTable extends Migration
     public function up()
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->uuid('id')->unique();
+            $table->string('id', 100)->primary();
             $table->unsignedInteger('relation_id');
             $table->string('title');
             $table->longText('description');

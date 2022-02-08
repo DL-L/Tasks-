@@ -9,19 +9,39 @@ use App\Models\Comment;
 use App\Models\Status;
 use App\Http\Resources\TasksResource;
 use App\Http\Requests\TasksRequest;
+use App\Notifications\TaskAdded;
+use App\Events\ActionEvent;
 
 class TasksController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
+    public function __construct()
+    {
+        $this->middleware('task.status.updater');
+    }
      
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function index()
+    {
+        $connected_user_id= auth()->user()->id;
+        $relation_id = Relation::where('admin_id', '=', $connected_user_id)
+                            -> orWhere('sub_id', '=', $connected_user_id)
+                            ->get();
+        $array = array();
+        foreach ($relation_id as $rel_id) {
+            $relation_id = $rel_id->id;
+            $array[] = $rel_id->id;
+        }
+        $tasks = Task::whereIn('relation_id', $array)->get();
+        return TasksResource::collection($tasks);
+
+        // return response()->json($tasks, 200);
+    }
+
     public function indexAdmin()
     {
         $connected_user_id= auth()->user()->id;
@@ -33,7 +53,8 @@ class TasksController extends Controller
             $array[] = $rel_id->id;
         }
         $tasks = Task::whereIn('relation_id', $array)->get();
-        return response()->json($tasks, 200);
+        return TasksResource::collection($tasks);
+        // return response()->json($tasks, 200);
     }
 
     public function indexSub()
@@ -47,9 +68,44 @@ class TasksController extends Controller
             $array[] = $rel_id->id;
         }
         $tasks = Task::whereIn('relation_id', $array)->get();
-        return response()->json($tasks, 200);
+        return TasksResource::collection($tasks);
+
+        // return response()->json($tasks, 200);
     }
 
+    public function getTasksAdmin(Request $request)
+    {
+        $connected_user_id= auth()->user()->id;
+        $relation_id = Relation::where('admin_id', '=', $request-> admin_id)
+                            ->where('sub_id', '=', $connected_user_id)
+                            ->get();
+        $array = array();
+        foreach ($relation_id as $rel_id) {
+            $relation_id = $rel_id->id;
+            $array[] = $rel_id->id;
+        }
+        $tasks = Task::whereIn('relation_id', $array)->get();
+        return TasksResource::collection($tasks);
+
+        // return response()->json($tasks, 200);
+    }
+
+    public function getTasksSub(Request $request)
+    {
+        $connected_user_id= auth()->user()->id;
+        $relation_id = Relation::where('admin_id', '=', $connected_user_id)
+                            ->where('sub_id', '=', $request->sub_id)
+                            ->get();
+        $array = array();
+        foreach ($relation_id as $rel_id) {
+            $relation_id = $rel_id->id;
+            $array[] = $rel_id->id;
+        }
+        $tasks = Task::whereIn('relation_id', $array)->get();
+        return TasksResource::collection($tasks);
+
+        // return response()->json($tasks, 200);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -76,7 +132,10 @@ class TasksController extends Controller
                         ->where('phone_number','=',$sub_number)
                         ->firstOrFail()
                         ->id;
-        // $sub_id = User::where('phone_number','=', $sub_number)->firstOrFail()->id;
+        $user_notify = $admin->sub_user()
+                        ->where('phone_number','=',$sub_number)
+                        ->firstOrFail();
+        
         $relation_id = Relation::where('admin_id', '=', $admin_id)
                             ->where('sub_id','=', $sub_id)
                             ->firstOrFail()
@@ -89,7 +148,8 @@ class TasksController extends Controller
             'status_id' => 1,
             'deadline' => $request->deadline,
         ]);
-
+        event(new ActionEvent($task));
+        // $user_notify->notify(new TaskAdded($task));
         return new TasksResource($task);
     }
 
@@ -111,7 +171,11 @@ class TasksController extends Controller
      */
     public function show(Task $task)
     {
-        return new TasksResource($task);
+        if ($task->status->name == 'sent' || $task->status->name =='received') {
+            $task->updateStatus($task);
+        }
+        $task->updateTaskComment($task);
+        return new TasksResource($task->fresh());
     }
 
     /**
@@ -132,19 +196,22 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function admin_update(Request $request, Task $task)
+    public function admin_update(Request $request, $task)
     {
+        $task = Task::find($task);
         $task-> update([  
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'deadline' => $request->input('deadline')
         ]);
+        
 
         return new TasksResource($task);
     }
 
     public function sub_update(Request $request, Task $task)
     {
+        $task = Task::find($task)->first();
         $status_name = $request->input('status_name');
         $status_id = Status::where('name','=', $status_name)
                             ->firstOrFail()
@@ -152,6 +219,26 @@ class TasksController extends Controller
         $task->update([  
             'status_id' => $status_id,
         ]);
+        if ($request->input('body')== null) {
+            
+        }else{
+        Comment::create([
+            'task_id' => $task->id,
+            'user_id' => auth()->user()->id,
+            'seen' => false,
+            'body' => $request->input('body'),
+        ]);}
+
+        return new TasksResource($task);
+    }
+
+    public function status_update(Request $request, $task)
+    {
+        $task = Task::find($task);
+        $task-> update([  
+            'status_id' => $request->input('status_id'),
+        ]);
+        
 
         return new TasksResource($task);
     }
@@ -161,8 +248,10 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
+        // dd($id);
+        $task = Task::find($id);
         $task->delete();
         return response(null, 204);
     }

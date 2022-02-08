@@ -3,36 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\CommentsResource;
-use App\Models\Comment;
+use App\Models\Relation;
 
-class CommentsController extends Controller
+class RelationsController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function sub_index()
+    public function indexSub()
     {
-        $connected_user_id = auth()->user()->id;
-        $comments = Comment::where('user_id', '=', $connected_user_id)->firstOrFail();
-        return CommentsResource::collection($comments);
+        $connected_user_id= auth()->user()->id;
+        $relation = Relation::where('sub_id', '=', $connected_user_id)
+                            ->get();
+        return response()->json($relation, 200);
     }
 
-    public function admin_index()
-    {
-        $sub_users = auth()->user()->sub_user;
-        foreach ($sub_users as $sub_user) {
-            $sub_user_id = $sub_user->id;
-            $comments = Comment::where('user_id', '=', $sub_user_id)->firstOrFail();
-            return CommentsResource::collection($comments);
-        }
-    }
     /**
      * Show the form for creating a new resource.
      *
@@ -51,7 +38,13 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-    
+        $connected_user_id= auth()->user()->id;
+        $relation = Relation::create([
+            'admin_id' => $request->admin_id,
+            'sub_id' => $connected_user_id,
+            'validated' => false,
+        ]);
+        return response()->json($relation, 200);
     }
 
     /**
@@ -83,18 +76,10 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request, $id)
     {
-        $comment->update([
-            'body' => $request->input('body'),
-        ]);
+        //
     }
-    // public function update_status(Request $request, Comment $comment)
-    // {
-    //     $comment->update([
-    //         'seen' => $request->input('seen'),
-    //     ]);
-    // }
 
     /**
      * Remove the specified resource from storage.
@@ -102,8 +87,8 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        $comment->delete();
+        //
     }
 }

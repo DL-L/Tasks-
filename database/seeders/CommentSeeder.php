@@ -22,7 +22,7 @@ class CommentSeeder extends Seeder
         // ]);
 
         DB::table('comments')->insert([
-            'task_id' => '5b0853f8-cc3b-4b56-b01a-3858a97f038b',
+            'task_id' => '0766ae21-630a-47d9-8ed8-c4c6bfd2e48f',
             'user_id' => '3',
             'seen' => false,
             'body' => 'comments bodyy',

@@ -14,6 +14,10 @@ class Relation extends Model
 
     protected $primaryKey = 'id';
 
+    protected $fillable = [ 'admin_id', 'sub_id'];
+
+    public $timestamps = false;
+
     public function usertasks()
     {
         return $this->hasMany(Task::class);

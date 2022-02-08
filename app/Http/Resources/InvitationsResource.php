@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TasksResource extends JsonResource
+class InvitationsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,14 +16,13 @@ class TasksResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->description,
-            'status' => $this->status,
-            'deadline' => $this->deadline,
-            'comments' => $this->usercomments,
-            'relation' => $this->relation,
+            'from' => $this->from,
+            'to' => $this->to,
+            'validated' => $this->validated,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
+            'receiver' => $this->toUser,
+            'transmitter' => $this->fromUser,
         ];
     }
 }

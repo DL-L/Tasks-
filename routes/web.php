@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/f', function () {
+    return view('welcome');
+});
 
 // Route::post('user/validate/', [LoginController::class, 'validate_num']);
 // Route::post('user/auth/', [LoginController::class,'auth']);
@@ -39,19 +39,19 @@ Route::get('/', function(Request $request)
 //Route::resource('/tasks', TasksController::class);
 //Route::put('/tasks/{id}', 'App\Http\Controllers\TasksController@admin_update')->middleware('RoleAdmin');
 
-Route::get('tasks/{task}', 'App\Http\Controllers\TasksController@show');
+// Route::get('tasks/{task}', 'App\Http\Controllers\TasksController@show');
 
 // Route::post('/tasks', 'App\Http\Controllers\TasksController@store' );
 
-Route::put('/admin/tasks/{task}', 'App\Http\Controllers\TasksController@admin_update' )
-        ->whereUuid('task')
-        ->middleware('role.admin');
+// Route::put('/admin/tasks/{task}', 'App\Http\Controllers\TasksController@admin_update' )
+//         ->whereUuid('task')
+//         ->middleware('role.admin');
 
-Route::put('/sub/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )
-        ->whereUuid('task')
-        ->middleware('role.sub');
+// Route::put('/sub/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )
+//         ->whereUuid('task')
+//         ->middleware('role.sub');
 
-Route::delete('/tasks/{task}', 'App\Http\Controllers\TasksController@destroy')->middleware('role.admin');
+// Route::delete('/tasks/{task}', 'App\Http\Controllers\TasksController@destroy')->middleware('role.admin');
 
 
 Route::post('/tasks/comments/{task}', 'App\Http\Controllers\TasksController@store_comment')->middleware('role.sub');
@@ -59,6 +59,11 @@ Route::post('/tasks/comments/{task}', 'App\Http\Controllers\TasksController@stor
 Route::put('/comments/{comment}', 'App\Http\Controllers\CommentsController@update' );
 
 // Route::put('/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )->whereUuid('task');
+
+Route::get('/fire', function () {
+  event(new \App\Events\ActionEvent());
+  return 'ok';
+});
 
 Route::get('user/logout', function()
 {

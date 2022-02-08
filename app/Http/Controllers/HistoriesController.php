@@ -3,36 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\CommentsResource;
-use App\Models\Comment;
+use App\Models\Task;
+use App\Models\History;
 
-class CommentsController extends Controller
+class HistoriesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function sub_index()
-    {
-        $connected_user_id = auth()->user()->id;
-        $comments = Comment::where('user_id', '=', $connected_user_id)->firstOrFail();
-        return CommentsResource::collection($comments);
+    public function index(Request $request)
+    {   
+        $histories= History::where('id_task','=', $request->id_task)->get();
+        return $histories;
     }
 
-    public function admin_index()
-    {
-        $sub_users = auth()->user()->sub_user;
-        foreach ($sub_users as $sub_user) {
-            $sub_user_id = $sub_user->id;
-            $comments = Comment::where('user_id', '=', $sub_user_id)->firstOrFail();
-            return CommentsResource::collection($comments);
-        }
-    }
     /**
      * Show the form for creating a new resource.
      *
@@ -51,7 +37,7 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-    
+        //
     }
 
     /**
@@ -83,18 +69,10 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request, $id)
     {
-        $comment->update([
-            'body' => $request->input('body'),
-        ]);
+        //
     }
-    // public function update_status(Request $request, Comment $comment)
-    // {
-    //     $comment->update([
-    //         'seen' => $request->input('seen'),
-    //     ]);
-    // }
 
     /**
      * Remove the specified resource from storage.
@@ -102,8 +80,8 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        $comment->delete();
+        //
     }
 }

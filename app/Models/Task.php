@@ -30,7 +30,7 @@ class Task extends Model
 
     public function relation()
     {
-        return $this->belongsTo(Relation::class);
+        return $relation = $this->belongsTo(Relation::class);
     }
 
     public function usercomments()
@@ -41,6 +41,59 @@ class Task extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function updateStatus($task)
+    {
+        $connected_user_id= auth()->user()->id;
+       
+        if ($task->admin($connected_user_id)) {
+            return null;
+        }else {
+            $t = tap($task)->update([
+                'status_id'=> 3,
+            ])->save();
+            return $task;
+        }
+    }
+
+    public function updateTaskComment($task)
+    {
+        $connected_user_id= auth()->user()->id;
+       
+        if ($task->admin($connected_user_id)) {
+            $comments =$task->usercomments()->get();
+            foreach ($comments as $comment) {
+                if ($comment->seen == false) {
+                    $comment->updateStatus($comment);
+                }else {
+                    return null;
+                }
+            }
+            return $task;
+        }else {
+            return null;
+        }
+    }
+
+    public function updateStatusToReceived($task)
+    {
+        $connected_user_id= auth()->user()->id;
+        if ($task->status->name == 'sent' ) {
+            if ($task->admin($connected_user_id)) {
+                return null;
+             }else {
+                 tap($task)->update([
+                     'status_id'=> 2,
+                 ])->save();
+             }
+        }
+        
+    }
+
+    public function sub_user_id()
+    {
+        return $this->relation()->first()->sub_id;
     }
 
     public function admin($user_id)

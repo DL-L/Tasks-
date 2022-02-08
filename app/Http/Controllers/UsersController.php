@@ -20,6 +20,12 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function index()
+    {
+        $users=User::all();
+        return response()->json($users, 200);
+    }
+
     public function indexAdmins()
     {
         $connected_user= auth()->user();
@@ -63,6 +69,11 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function show(User $user){
+        // $user = User::where('id', '=', $request->id)->get();
+        return response()->json($user, 200);
+    }
+    
     public function showAdminTasks($id)
     {
         $connected_user_id= auth()->user()->id;
