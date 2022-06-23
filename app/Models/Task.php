@@ -76,24 +76,25 @@ class Task extends Model
         }
     }
 
-    public function updateStatusToReceived($task)
+    public function updateStatusToReceived()
     {
         $connected_user_id= auth()->user()->id;
-        if ($task->status->name == 'sent' ) {
-            if ($task->admin($connected_user_id)) {
-                return null;
-             }else {
-                 tap($task)->update([
-                     'status_id'=> 2,
-                 ])->save();
-             }
+        if ($this->status->name == 'sent' ) {          
+            tap($this)->update([
+                'status_id'=> 2,
+            ])->save();
         }
-        
+        return $this;
     }
 
     public function sub_user_id()
     {
         return $this->relation()->first()->sub_id;
+    }
+
+    public function admin_id()
+    {
+        return $this->relation()->first()->admin_id;
     }
 
     public function admin($user_id)

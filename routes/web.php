@@ -61,8 +61,15 @@ Route::put('/comments/{comment}', 'App\Http\Controllers\CommentsController@updat
 // Route::put('/tasks/{task}', 'App\Http\Controllers\TasksController@sub_update' )->whereUuid('task');
 
 Route::get('/fire', function () {
-  event(new \App\Events\ActionEvent());
+  $keyword = request("message");
+  event(new \App\Events\ActionEvent($keyword));
   return 'ok';
+});
+
+
+
+Route::get('notification', function(){
+    return view('notification');
 });
 
 Route::get('user/logout', function()

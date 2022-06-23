@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use App\Events\ActionEvent;
 
 class LoginController extends Controller
 {
@@ -46,6 +47,7 @@ class LoginController extends Controller
         if($user && $user->validateCode($code)) 
         {
             $authToken = $user->createToken('auth-token')->plainTextToken;
+            event(new ActionEvent($user->id));
             return response()->json(['success' => true,
                                     'user' => $phoneNum,
                                     'access_token' => $authToken]);

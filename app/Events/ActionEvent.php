@@ -12,9 +12,7 @@ class ActionEvent implements ShouldBroadcast
 {
   use Dispatchable, InteractsWithSockets, SerializesModels;
 
-  public $data = 'echo test';
-  // public $sub_ids;
-  // public $task;
+  public $user_id ;
 
   /**
     * Create a new event instance.
@@ -23,11 +21,9 @@ class ActionEvent implements ShouldBroadcast
     *
     * @return void
     */
-  public function __construct()
+  public function __construct($user_id)
   {
-    
-    // $this->sub_id = $sub_id;
-    // $this->task= $task;
+    $this->user_id = $user_id;
   }
 
   /**
@@ -39,7 +35,7 @@ class ActionEvent implements ShouldBroadcast
     */
   public function broadcastOn()
   {
-      return new Channel('test');
+      return new PrivateChannel("otp.private.channel.{$this->user_id}");
   }
 
 //   public function broadcastAs()
@@ -54,10 +50,10 @@ class ActionEvent implements ShouldBroadcast
     *
     * @return array
     */
-    public function broadcastWith()
-    {
-        return [
-            'title' => 'first notification'
-        ];
-    }
+    // public function broadcastWith()
+    // {
+    //     return [
+    //         'title' => 'first notification'
+    //     ];
+    // }
 }

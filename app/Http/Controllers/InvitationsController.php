@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Invitation;
 use App\Models\User;
 use App\Http\Resources\InvitationsResource;
+use App\Events\InvitationEvent;
 
 class InvitationsController extends Controller
 {
@@ -55,6 +56,9 @@ class InvitationsController extends Controller
             'to' => $request->to,
             'validated' => false,
         ]);
+
+        event(new InvitationEvent($invitation,$request->to,'You have a new Invitation'));
+
         return response()->json($invitation, 200);
     }
 

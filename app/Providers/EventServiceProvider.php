@@ -6,6 +6,10 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Events\TaskEvent;
+use App\Listeners\ChangeStatus;
+use App\Events\ActionEvent;
+use App\Listeners\TaskAddedListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ActionEvent::class => [
             TaskAddedListener::class,
+        ],
+        TaskEvent::class => [
+            ChangeStatus::class,
         ],
     ];
 

@@ -17,10 +17,20 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-// Broadcast::channel('task.created', function ($user) {
-//     return true; // just allow all authenticated users
-// });
-
-Broadcast::channel('Task.Added.{taskId}', function ($user, $taskId) {
-    return $user->id === Task::findOrNew($taskId)->sub_user_id;
+Broadcast::channel("task.private.channel.{userId}" , function ($user , $userId){
+    return true;
+    // (int) $user->id === (int) $userId;
 });
+
+Broadcast::channel("invitation.private.channel.{user_id}" , function ($user , $user_id){
+    return true;
+    // (int) $user->id === (int) $userId;
+});
+
+Broadcast::channel("otp.private.channel.{user_id}" , function ($user , $user_id){
+    return true;
+    // (int) $user->id === (int) $userId;
+});
+// Broadcast::channel('Task.Added.{taskId}', function ($user, $taskId) {
+//     return $user->id === Task::findOrNew($taskId)->sub_user_id;
+// });

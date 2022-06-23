@@ -11,13 +11,10 @@ use App\Http\Resources\TasksResource;
 use App\Http\Requests\TasksRequest;
 use App\Notifications\TaskAdded;
 use App\Events\ActionEvent;
+use App\Events\TaskEvent;
 
 class TasksController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('task.status.updater');
-    }
      
     /**
      * Display a listing of the resource.
@@ -141,14 +138,13 @@ class TasksController extends Controller
                             ->firstOrFail()
                             ->id;
         $task = Task::create([
-            // 'uuid'=> Str::uuid(),
             'relation_id' => $relation_id,
             'title' => $request->title,
             'description' => $request->description,
             'status_id' => 1,
             'deadline' => $request->deadline,
         ]);
-        event(new ActionEvent($task));
+        event(new TaskEvent($sub_id, $task, 'You have a new Task'));
         // $user_notify->notify(new TaskAdded($task));
         return new TasksResource($task);
     }
@@ -204,8 +200,10 @@ class TasksController extends Controller
             'description' => $request->input('description'),
             'deadline' => $request->input('deadline')
         ]);
-        
 
+        event(new TaskEvent($task->sub_user_id(), $task,
+                                'the task '. strtoupper($task->title). ' has been updated' ));
+        
         return new TasksResource($task);
     }
 
@@ -220,14 +218,21 @@ class TasksController extends Controller
             'status_id' => $status_id,
         ]);
         if ($request->input('body')== null) {
-            
+            // dd($task->title );
+            // dd($task->admin_id());
+            event(new TaskEvent($task->admin_id(), $task,
+                                'the task '. strtoupper($task->title). ' has been '. 
+                                strtoupper($task->status->name)));
         }else{
         Comment::create([
             'task_id' => $task->id,
             'user_id' => auth()->user()->id,
             'seen' => false,
             'body' => $request->input('body'),
-        ]);}
+        ]);
+        event(new TaskEvent($task->admin_id(), $task,
+                                'You have new comment in the task '. strtoupper($task->title) ));
+        }
 
         return new TasksResource($task);
     }
